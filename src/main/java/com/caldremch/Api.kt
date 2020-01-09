@@ -14,7 +14,7 @@ import retrofit2.http.*
  */
 interface Api {
     @GET
-    operator fun get(@Url url: String, @QueryMap maps: Map<String, Any>): Observable<ResponseBody>
+    operator fun get(@Url url: String, @QueryMap maps: MutableMap<String, Any>): Observable<ResponseBody>
 
     @GET
     operator fun get(@Url url: String): Observable<ResponseBody>
@@ -23,18 +23,18 @@ interface Api {
     fun post(@Url url: String, @Body requestBody: RequestBody): Observable<ResponseBody>
 
     @POST
-    fun postQuery(@Url url: String, @QueryMap maps: Map<String, Any>): Observable<ResponseBody>
+    fun postQuery(@Url url: String, @QueryMap maps: MutableMap<String, Any>): Observable<ResponseBody>
 
     @POST
     fun post(@Url url: String): Observable<ResponseBody>
 
     @FormUrlEncoded
     @POST
-    fun post(@Url url: String, @FieldMap requestData: Map<String, Any>): Observable<ResponseBody>
+    fun post(@Url url: String, @FieldMap requestData: MutableMap<String, Any>): Observable<ResponseBody>
 
     @Multipart
     @POST("File/upload")
-    fun upload(@PartMap requestData: Map<String, Any>): Observable<ResponseBody>
+    fun upload(@PartMap requestData: MutableMap<String, Any>): Observable<ResponseBody>
 
     @Multipart
     @POST("File/upload")

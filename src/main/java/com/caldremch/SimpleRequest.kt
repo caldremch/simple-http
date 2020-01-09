@@ -3,7 +3,7 @@ package com.caldremch
 import android.content.Context
 import com.caldremch.callback.AbsCallback
 import com.caldremch.callback.DialogCallback
-import com.caldremch.convert.CommonConvert
+import com.caldremch.convert.IConvert
 import com.caldremch.http.RetrofitHelper
 import com.caldremch.observer.AbsObserver
 import com.caldremch.observer.IObserver
@@ -33,10 +33,10 @@ class SimpleRequest : RequestBuilderOption() {
 
     companion object {
 
-        var realConvert: Class<in CommonConvert>? = null
-        var realObserver: Class<in IObserver>? = null
+        private var realConvert: Class<out IConvert>? = null
+        private var realObserver: Class<out IObserver>? = null
 
-        fun register(clz: Class<in CommonConvert>, obs: Class<in IObserver>) {
+        fun register(clz: Class<out IConvert>, obs: Class<out IObserver>) {
             realConvert = clz
             realObserver = obs
         }
@@ -56,19 +56,14 @@ class SimpleRequest : RequestBuilderOption() {
 
     }
 
-
-    fun execute() {
-
-
-    }
-
     private fun <T> go(obs: Observable<ResponseBody>, callback: AbsCallback<T>) {
         var observable = obs
         if (context == null && isShowDialog) {
             isShowToast = false
         }
+
         if (context != null) {
-            observable = observable.compose(RxUtils.bindToLifecycle(context))
+//            observable = observable.compose(RxUtils.bindToLifecycle(context))
         }
 
         if (callback is DialogCallback) {
@@ -80,7 +75,7 @@ class SimpleRequest : RequestBuilderOption() {
         }
 
 
-        val convert = realConvert?.newInstance() as CommonConvert
+        val convert = realConvert?.newInstance() as IConvert
         val obsHandler = realObserver?.newInstance() as IObserver
 
         val observer =
@@ -109,9 +104,9 @@ class SimpleRequest : RequestBuilderOption() {
             return this
         }
 
-        fun put(key: String, value: Any): RequestBuilder {
-            if (value != null) {
-                httpParams!!.put(key, value)
+        fun put(key: String, value: Any?): RequestBuilder {
+            value?.let {
+                httpParams.put(key, value)
             }
             return this
         }
@@ -131,11 +126,11 @@ class SimpleRequest : RequestBuilderOption() {
 
         fun put(body: Any): RequestBuilder {
             if (type == Method.GET && body is Map<*, *>) {
-                val d =
-                    body as Map<String, Any>
-                httpParams!!.setUrlParamsMap(d)
+                val d = body as Map<String, Any>
+                httpParams!!.setUrlParamsMap(d as MutableMap<String, Any>)
                 return this
             }
+
             if (body is RequestBody) {
                 requestBody = body
             } else {
@@ -163,8 +158,18 @@ class SimpleRequest : RequestBuilderOption() {
         fun <T> execute(callback: AbsCallback<T>) {
 
             val request = SimpleRequest()
-
             //todo build 与 simpleRequest 赋, 这样的 builder 是否合理
+            request.context = context
+            request.isShowDialog = isShowDialog
+            request.httpParams = httpParams
+            request.httpPath = httpPath
+            request.url = url
+            request.dialogTips = dialogTips
+            request.isShowToast = isShowToast
+            request.formUrlEncoded = formUrlEncoded
+            request.postQuery = postQuery
+            request.requestBody = requestBody
+            request.parts = parts
 
             var api: Api = RetrofitHelper.instance.getApi()
             if (httpPath != null && !httpPath!!.isEmpty) {
@@ -173,11 +178,13 @@ class SimpleRequest : RequestBuilderOption() {
             }
 
             when (type) {
-                Method.GET -> if (httpParams!!.isEmpty) {
-                    request.go<T>(api[url!!], callback)
+
+                Method.GET -> if (httpParams.isEmpty) {
+                    request.go<T>(api.get(url!!), callback)
                 } else {
-                    request.go<T>(api[url!!, httpParams!!.urlParams], callback)
+                    request.go<T>(api.get(url!!, httpParams.urlParams!!), callback)
                 }
+
                 Method.POST -> {
                     //body优先
                     if (requestBody != null) {
@@ -189,19 +196,20 @@ class SimpleRequest : RequestBuilderOption() {
                         request.go<T>(api.post(url!!, body), callback)
                     } else {
                         if (formUrlEncoded) {
-                            request.go<T>(api.post(url!!, httpParams!!.urlParams), callback)
+                            request.go<T>(api.post(url!!, httpParams.urlParams!!), callback)
                         } else if (postQuery) {
-                            request.go<T>(api.postQuery(url!!, httpParams!!.urlParams), callback)
+                            request.go<T>(api.postQuery(url!!, httpParams!!.urlParams!!), callback)
                         } else {
                             val body: RequestBody =
-                                httpParams!!.toJsonString().toRequestBody(HttpParams.MEDIA_TYPE_JSON)
+                                httpParams!!.toJsonString()
+                                    .toRequestBody(HttpParams.MEDIA_TYPE_JSON)
                             request.go<T>(api.post(url!!, body), callback)
                         }
                     }
                 }
-//                Method.FILE -> if (parts != null) {
-//                    go<T>(api.upload(parts), callback)
-//                }
+                Method.FILE -> if (parts != null) {
+//                    request.go<T>(api.upload(parts), callback)
+                }
             }
 
         }

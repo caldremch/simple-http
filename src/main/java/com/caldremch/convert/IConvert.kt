@@ -14,6 +14,6 @@ import java.lang.reflect.Type
  * @describe
  *
  **/
-interface CommonConvert {
+interface IConvert {
     fun <T> convert(responseBody: ResponseBody, type: Type): T
 }

@@ -19,15 +19,15 @@ import okhttp3.RequestBody
  **/
 open class RequestBuilderOption {
 
-    protected var httpParams: HttpParams? = null
-    protected var httpPath: HttpPath? = null
+    protected var httpParams: HttpParams = HttpParams()
+    protected var httpPath: HttpPath = HttpPath()
     protected var url: String? = null
     //0:get 1:post 2:file
     protected var type = Method.GET
     protected var context: Context? = null
     //是否显示弹窗
     protected var isShowDialog = false
-    protected var dialogTips:String? = ""
+    protected var dialogTips: String? = ""
     //是否显示toast
     protected var isShowToast = true
     /**
@@ -41,5 +41,5 @@ open class RequestBuilderOption {
 
     protected var requestBody: RequestBody? = null
 
-    private val parts: List<MultipartBody.Part>? = null
+    protected var parts: List<MultipartBody.Part>? = null
 }

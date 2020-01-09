@@ -1,6 +1,6 @@
 package com.caldremch
 
-import com.caldremch.convert.CommonConvert
+import com.caldremch.convert.IConvert
 import io.reactivex.functions.Function
 import okhttp3.ResponseBody
 import java.lang.reflect.Type
@@ -16,7 +16,7 @@ import java.lang.reflect.Type
  * @describe
  *
  **/
-class TransFunction<T>(var type: Type, var convert: CommonConvert) : Function<ResponseBody, T> {
+class TransFunction<T>(var type: Type, var convert: IConvert) : Function<ResponseBody, T> {
 
     override fun apply(responseBody: ResponseBody): T {
         return convert.convert(responseBody, type)

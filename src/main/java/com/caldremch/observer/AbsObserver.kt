@@ -57,6 +57,8 @@ class AbsObserver<T>(
             return
         }
 
+        handler?.handleError(e)
+
         callback?.onError(e)
     }
 
