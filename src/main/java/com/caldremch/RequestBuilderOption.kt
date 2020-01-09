@@ -3,6 +3,7 @@ package com.caldremch
 import android.content.Context
 import com.caldremch.parse.HttpParams
 import com.caldremch.parse.HttpPath
+import okhttp3.MultipartBody
 import okhttp3.RequestBody
 
 /**
@@ -39,4 +40,6 @@ open class RequestBuilderOption {
     protected var postQuery = false
 
     protected var requestBody: RequestBody? = null
+
+    private val parts: List<MultipartBody.Part>? = null
 }

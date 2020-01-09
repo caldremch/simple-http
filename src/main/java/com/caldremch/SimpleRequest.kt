@@ -162,15 +162,46 @@ class SimpleRequest : RequestBuilderOption() {
 
         fun <T> execute(callback: AbsCallback<T>) {
 
-
             val request = SimpleRequest()
 
+            //todo build 与 simpleRequest 赋, 这样的 builder 是否合理
 
             var api: Api = RetrofitHelper.instance.getApi()
             if (httpPath != null && !httpPath!!.isEmpty) {
                 url = httpPath!!.getPathUrl(url)
 
+            }
 
+            when (type) {
+                Method.GET -> if (httpParams!!.isEmpty) {
+                    request.go<T>(api[url!!], callback)
+                } else {
+                    request.go<T>(api[url!!, httpParams!!.urlParams], callback)
+                }
+                Method.POST -> {
+                    //body优先
+                    if (requestBody != null) {
+                        request.go<T>(api.post(url!!, requestBody!!), callback)
+                        return
+                    }
+                    if (httpParams!!.isEmpty) { //jpark服务器接口需要传一个空的body, 不能不传
+                        val body: RequestBody = "{}".toRequestBody(HttpParams.MEDIA_TYPE_JSON)
+                        request.go<T>(api.post(url!!, body), callback)
+                    } else {
+                        if (formUrlEncoded) {
+                            request.go<T>(api.post(url!!, httpParams!!.urlParams), callback)
+                        } else if (postQuery) {
+                            request.go<T>(api.postQuery(url!!, httpParams!!.urlParams), callback)
+                        } else {
+                            val body: RequestBody =
+                                httpParams!!.toJsonString().toRequestBody(HttpParams.MEDIA_TYPE_JSON)
+                            request.go<T>(api.post(url!!, body), callback)
+                        }
+                    }
+                }
+//                Method.FILE -> if (parts != null) {
+//                    go<T>(api.upload(parts), callback)
+//                }
             }
 
         }
