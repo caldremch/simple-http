@@ -9,7 +9,6 @@ import com.caldremch.observer.AbsObserver
 import com.caldremch.observer.IObserver
 import com.caldremch.observer.Option
 import com.caldremch.parse.HttpParams
-import com.caldremch.parse.HttpPath
 import com.caldremch.parse.HttpUtils
 import com.caldremch.utils.RxUtils
 import com.google.gson.Gson
@@ -117,17 +116,14 @@ class SimpleRequest : RequestBuilderOption() {
         }
 
         fun path(pathName: String, value: String): RequestBuilder {
-            if (httpPath == null) {
-                httpPath = HttpPath()
-            }
-            httpPath!!.put(pathName, value)
+            httpPath.put(pathName, value)
             return this
         }
 
         fun put(body: Any): RequestBuilder {
             if (type == Method.GET && body is Map<*, *>) {
                 val d = body as Map<String, Any>
-                httpParams!!.setUrlParamsMap(d as MutableMap<String, Any>)
+                httpParams.setUrlParamsMap(d as MutableMap<String, Any>)
                 return this
             }
 
@@ -158,7 +154,6 @@ class SimpleRequest : RequestBuilderOption() {
         fun <T> execute(callback: AbsCallback<T>) {
 
             val request = SimpleRequest()
-            //todo build 与 simpleRequest 赋, 这样的 builder 是否合理
             request.context = context
             request.isShowDialog = isShowDialog
             request.httpParams = httpParams
@@ -172,8 +167,9 @@ class SimpleRequest : RequestBuilderOption() {
             request.parts = parts
 
             var api: Api = RetrofitHelper.instance.getApi()
-            if (httpPath != null && !httpPath!!.isEmpty) {
-                url = httpPath!!.getPathUrl(url)
+
+            if (!httpPath.isEmpty) {
+                url = httpPath.getPathUrl(url)
 
             }
 
@@ -191,17 +187,17 @@ class SimpleRequest : RequestBuilderOption() {
                         request.go<T>(api.post(url!!, requestBody!!), callback)
                         return
                     }
-                    if (httpParams!!.isEmpty) { //jpark服务器接口需要传一个空的body, 不能不传
+                    if (httpParams.isEmpty) {
                         val body: RequestBody = "{}".toRequestBody(HttpParams.MEDIA_TYPE_JSON)
                         request.go<T>(api.post(url!!, body), callback)
                     } else {
                         if (formUrlEncoded) {
                             request.go<T>(api.post(url!!, httpParams.urlParams!!), callback)
                         } else if (postQuery) {
-                            request.go<T>(api.postQuery(url!!, httpParams!!.urlParams!!), callback)
+                            request.go<T>(api.postQuery(url!!, httpParams.urlParams!!), callback)
                         } else {
                             val body: RequestBody =
-                                httpParams!!.toJsonString()
+                                httpParams.toJsonString()
                                     .toRequestBody(HttpParams.MEDIA_TYPE_JSON)
                             request.go<T>(api.post(url!!, body), callback)
                         }
