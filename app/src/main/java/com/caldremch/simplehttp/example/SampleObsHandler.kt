@@ -1,4 +1,4 @@
-package com.caldremch.http.example
+package com.caldremch.simplehttp.example
 
 import com.caldremch.observer.IObserverHandler
 
@@ -14,13 +14,14 @@ import com.caldremch.observer.IObserverHandler
  *
  **/
 class SampleObsHandler : IObserverHandler {
+
     override fun showDialog() {
     }
 
     override fun closeDialog() {
     }
 
-    override fun handleError(e: Throwable) {
+    override fun onError(e: Throwable) {
 
     }
 }

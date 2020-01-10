@@ -1,4 +1,4 @@
-package com.caldremch.http.example
+package com.caldremch.simplehttp.example
 
 /**
  *
