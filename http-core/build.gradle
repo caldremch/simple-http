@@ -26,7 +26,7 @@ android {
 }
 
 
-def versions_retrofit = "2.4.0"
+def versions_retrofit = "2.7.1"
 def versions_okhttp3 = "4.3.1"
 
 dependencies {
