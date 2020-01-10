@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'org.jetbrains.dokka'
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
@@ -24,6 +25,7 @@ android {
     }
 
 }
+
 
 
 def versions_retrofit = "2.7.1"
@@ -51,3 +53,18 @@ dependencies {
     api 'com.trello.rxlifecycle3:rxlifecycle-components:3.1.0'
     api 'com.trello.rxlifecycle3:rxlifecycle-kotlin:3.1.0'
 }
+
+
+dokka {
+    outputFormat = 'html'
+    outputDirectory = "$buildDir/docs"
+    configuration {
+
+    }
+}
+
+task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
+    outputFormat = "javadoc"
+    outputDirectory = "$buildDir/dokkaJavadoc"
+}
+
