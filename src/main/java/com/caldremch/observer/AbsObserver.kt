@@ -21,7 +21,7 @@ class AbsObserver<T>(
     var callback: AbsCallback<T>?,
     var context: Context?,
     var option: Option,
-    var handler: IObserver?
+    var handler: IObserverHandler?
 ) : Observer<T> {
 
     init {

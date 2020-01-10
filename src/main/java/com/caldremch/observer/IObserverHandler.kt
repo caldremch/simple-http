@@ -11,7 +11,7 @@ package com.caldremch.observer
  * @describe
  *
  **/
-interface IObserver {
+interface IObserverHandler {
 
     /**
      * 处理弹窗相关逻辑

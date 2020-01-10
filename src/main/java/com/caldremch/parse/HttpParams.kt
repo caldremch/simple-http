@@ -16,7 +16,7 @@ import okhttp3.MediaType.Companion.toMediaType
 class HttpParams {
     private var urlParamsMap: MutableMap<String, Any> = mutableMapOf()
 
-    val urlParams: MutableMap<String, Any>?
+    val urlParams: MutableMap<String, Any>
         get() = urlParamsMap
 
     fun setUrlParamsMap(urlParamsMap: MutableMap<String, Any>) {
@@ -36,11 +36,11 @@ class HttpParams {
 
 
     fun put(key: String, value: Any) {
-        urlParamsMap!![key] = value
+        urlParamsMap[key] = value
     }
 
     val isEmpty: Boolean
-        get() = urlParamsMap!!.isEmpty()
+        get() = urlParamsMap.isEmpty()
 
     fun toJsonString(): String {
         return if (!isEmpty) {

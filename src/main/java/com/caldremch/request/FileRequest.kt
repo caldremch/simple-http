@@ -2,6 +2,7 @@ package com.caldremch.request
 
 import com.caldremch.Method
 import com.caldremch.callback.AbsCallback
+import okhttp3.MultipartBody
 
 /**
  *
@@ -11,15 +12,15 @@ import com.caldremch.callback.AbsCallback
  *
  * @email caldremch@163.com
  *
- * @describe
+ * @describe todo
  *
  **/
-class GetRequest(url: String) : BaseRequest(url,  Method.GET) {
+class FileRequest(url: String) : BaseRequest(url,  Method.FILE) {
+
+    protected var parts: List<MultipartBody.Part>? = null
+
     override fun <T> execute(callback: AbsCallback<T>) {
-        if(httpParams.isEmpty) {
-            go<T>(api.get(url), callback)
-        } else {
-            go<T>(api.get(url, httpParams.urlParams), callback)
-        }
+
     }
+
 }

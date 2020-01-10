@@ -60,7 +60,7 @@ class RetrofitHelper {
 
     open val baseUrl: String
         get() {
-            return ""
+            return "https://www.jpark.vip/"
         }
 
 
