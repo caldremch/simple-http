@@ -1,7 +1,13 @@
 package com.caldremch.observer
 
 import android.content.Context
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.OnLifecycleEvent
 import com.caldremch.callback.AbsCallback
+import com.caldremch.custom.IObserverHandler
+import com.trello.rxlifecycle3.LifecycleProvider
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 import java.lang.NullPointerException
@@ -14,7 +20,7 @@ import java.lang.NullPointerException
  *
  * @email caldremch@163.com
  *
- * @describe
+ * @describe handle data
  *
  **/
 class AbsObserver<T>(
@@ -22,9 +28,13 @@ class AbsObserver<T>(
     var context: Context?,
     var option: Option,
     var handler: IObserverHandler?
-) : Observer<T> {
+) : Observer<T> , LifecycleObserver{
+
+    private var d: Disposable? = null
 
     init {
+
+        registerRawLifecycle()
 
         handler?.onInit()
 
@@ -33,16 +43,23 @@ class AbsObserver<T>(
         }
     }
 
-    private fun canShowDialog(): Boolean = option.isShowDialog && context != null
-
-    override fun onComplete() {
-        handler?.onComplete()
-        if (canShowDialog()) {
-            handler?.closeDialog()
+    /**
+     * when lifecycle is destroy, check subscribe
+     */
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    fun destroy(){
+        d?.let {
+            if (!it.isDisposed){
+                it.dispose()
+            }
         }
     }
 
+    private fun canShowDialog(): Boolean = option.isShowDialog && context != null
+
+
     override fun onSubscribe(d: Disposable) {
+        this.d = d
         handler?.onSubscribe(d)
         callback?.onPreRequest(d)
     }
@@ -66,6 +83,41 @@ class AbsObserver<T>(
         handler?.onError(e)
 
         callback?.onError(e)
+
+        unRegisterRawLifecycle()
     }
 
+
+    override fun onComplete() {
+
+        handler?.onComplete()
+
+        if (canShowDialog()) {
+            handler?.closeDialog()
+        }
+
+        unRegisterRawLifecycle()
+    }
+
+    /**
+     * register the android lifecycle
+     */
+    private fun registerRawLifecycle() {
+        context?.let {
+            if (it !is LifecycleProvider<*> && it is LifecycleOwner) {
+                it.lifecycle.addObserver(this)
+            }
+        }
+    }
+
+    /**
+     * remove  android lifecycle observer
+     */
+    private fun unRegisterRawLifecycle() {
+        context?.let {
+            if (it !is LifecycleProvider<*> && it is LifecycleOwner) {
+                it.lifecycle.removeObserver(this)
+            }
+        }
+    }
 }

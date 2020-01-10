@@ -1,6 +1,6 @@
-package com.caldremch.simplehttp.example
+package com.caldremch.simplehttp.customhttp
 
-import com.caldremch.convert.IConvert
+import com.caldremch.custom.IConvert
 import com.caldremch.exception.ApiCode
 import com.caldremch.exception.ApiHttpException
 import com.caldremch.exception.NullDataSuccessException
@@ -28,14 +28,13 @@ class SampleConvert : IConvert {
 
     override fun <T> convert(responseBody: ResponseBody, type: Type): T {
 
-        try {
+        responseBody.use {
             val jsonRespStr: String = responseBody.string()
             val jsonObject = mParser.parse(jsonRespStr).asJsonObject
             val dataJson = jsonObject["data"]
             val javaStatus = jsonObject["status"]
 
             if (javaStatus != null) {
-
                 val status = javaStatus.asString
                 //抛出后, 在 Observer 中处理
                 var msg: String? = ""
@@ -61,8 +60,6 @@ class SampleConvert : IConvert {
             } else {
                 mGson.fromJson(dataStr, type)
             }
-        }finally {
-            responseBody.close()
         }
     }
 }

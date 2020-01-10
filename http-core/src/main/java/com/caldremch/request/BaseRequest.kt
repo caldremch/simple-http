@@ -1,20 +1,23 @@
 package com.caldremch.request
 
 import android.content.Context
-import com.caldremch.*
+import androidx.lifecycle.LifecycleOwner
+import com.caldremch.Api
+import com.caldremch.Method
+import com.caldremch.SimpleRequest
 import com.caldremch.callback.AbsCallback
 import com.caldremch.callback.DialogCallback
-import com.caldremch.http.RetrofitHelper
+import com.caldremch.function.TransFunction
+import com.caldremch.http.RequestHelper
 import com.caldremch.observer.AbsObserver
-import com.caldremch.observer.IObserverHandler
 import com.caldremch.observer.Option
 import com.caldremch.parse.HttpParams
 import com.caldremch.parse.HttpPath
 import com.caldremch.parse.HttpUtils
 import com.caldremch.utils.RxUtils
+import com.trello.rxlifecycle3.LifecycleProvider
 import io.reactivex.Observable
 import okhttp3.ResponseBody
-import java.lang.RuntimeException
 
 /**
  *
@@ -27,26 +30,29 @@ import java.lang.RuntimeException
  * @describe
  *
  **/
-abstract class BaseRequest(var url: String, @Method var type:Int) : IRequest {
+abstract class BaseRequest(var url: String, @Method var type: Int) : IRequest {
 
     protected var httpParams: HttpParams = HttpParams()
 
-    protected var httpPath: HttpPath = HttpPath()
+    private var httpPath: HttpPath = HttpPath()
 
-    protected var context: Context? = null
+    private var context: Context? = null
 
     //是否显示弹窗
-    protected var isShowDialog = false
+    private var isShowDialog = false
 
-    protected var dialogTips: String? = ""
+    private var dialogTips: String? = ""
 
     //是否显示toast
-    protected var isShowToast = true
+    private var isShowToast = true
 
-    protected lateinit var api: Api
+    protected var api: Api
 
     init {
-        api = RetrofitHelper.instance.getApi()
+        val config = SimpleRequest.getServerUrlConfig()
+            ?: throw RuntimeException("please register SimpleRequest")
+        api =
+            if (config.enableConfig()) RequestHelper().getApi() else RequestHelper.INSTANCE.getApi()
     }
 
     fun with(context: Context): BaseRequest {
@@ -81,7 +87,9 @@ abstract class BaseRequest(var url: String, @Method var type:Int) : IRequest {
         }
 
         if (context != null) {
-//            observable = observable.compose(RxUtils.bindToLifecycle(context))
+            if (context is LifecycleProvider<*>) {
+                observable = observable.compose(RxUtils.bindToLifecycle(context))
+            }
         }
 
         if (callback is DialogCallback) {
@@ -93,11 +101,11 @@ abstract class BaseRequest(var url: String, @Method var type:Int) : IRequest {
         }
 
 
-        val convert = SimpleRequestUtils.getConvert()
-        val obsHandler = SimpleRequestUtils.getObserverHandler()
+        val convert = SimpleRequest.getConvert()
+        val obsHandler = SimpleRequest.getObserverHandler()
 
-        if (convert == null || obsHandler == null){
-            throw RuntimeException("please register convert and observer handler")
+        if (convert == null || obsHandler == null) {
+            throw RuntimeException("please register SimpleRequest")
         }
 
         val observer =
@@ -109,7 +117,13 @@ abstract class BaseRequest(var url: String, @Method var type:Int) : IRequest {
             )
 
         observable.compose(RxUtils.applySchedulers())
-            .map(TransFunction<T>(HttpUtils.getType(callback), convert))
+            .map(
+                TransFunction<T>(
+                    HttpUtils.getType(
+                        callback
+                    ), convert
+                )
+            )
             .subscribe(observer)
 
     }

@@ -1,4 +1,4 @@
-package com.caldremch.convert
+package com.caldremch.custom
 
 import okhttp3.ResponseBody
 import java.lang.reflect.Type

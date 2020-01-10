@@ -13,6 +13,7 @@ import retrofit2.http.*
  * @describe
  */
 interface Api {
+
     @GET
     operator fun get(@Url url: String, @QueryMap maps: MutableMap<String, Any>): Observable<ResponseBody>
 

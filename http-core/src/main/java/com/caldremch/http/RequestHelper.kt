@@ -1,12 +1,14 @@
 package com.caldremch.http
 
 import com.caldremch.Api
+import com.caldremch.SimpleRequest
 import com.google.gson.Gson
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import java.lang.RuntimeException
 import java.util.concurrent.TimeUnit
 
 /**
@@ -21,15 +23,15 @@ import java.util.concurrent.TimeUnit
  *
  **/
 
-class RetrofitHelper {
+class RequestHelper {
 
     private val defualt_timeout = 20L
 
     private val gson: Gson = Gson()
 
-    private lateinit var clientBuilder: OkHttpClient.Builder
+    private var clientBuilder: OkHttpClient.Builder
 
-    private lateinit var retrofit: Retrofit
+    private var retrofit: Retrofit
 
     init {
 
@@ -41,6 +43,10 @@ class RetrofitHelper {
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
         clientBuilder.addInterceptor(loggingInterceptor)
 
+        val config = SimpleRequest.getServerUrlConfig()
+            ?: throw RuntimeException("please register SimpleRequest")
+
+        val baseUrl = if (config.enableConfig())  config.defaultUrl() else config.currentUrl()
         retrofit = Retrofit.Builder()
             .baseUrl(baseUrl)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
@@ -54,19 +60,14 @@ class RetrofitHelper {
         return retrofit.create(clz)
     }
 
-    open fun getApi(): Api {
+    fun getApi(): Api {
         return create(Api::class.java)
     }
 
-    open val baseUrl: String
-        get() {
-            return "https://www.jpark.vip/"
-        }
-
-
     companion object {
-        val instance: RetrofitHelper by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
-            RetrofitHelper()
+
+        val INSTANCE: RequestHelper by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
+            RequestHelper()
         }
     }
 }

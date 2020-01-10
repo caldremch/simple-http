@@ -1,4 +1,4 @@
-package com.caldremch.simplehttp.example
+package com.caldremch.simplehttp.customhttp
 
 /**
  *
@@ -10,9 +10,5 @@ package com.caldremch.simplehttp.example
  *
  **/
 object TestApiConstant {
-
-    const val serverUrl = "https://www.jpark.vip/"
-
     const val login = "jf-jpark-app-web-api/user/login"
-
 }

@@ -1,4 +1,4 @@
-package com.caldremch.observer
+package com.caldremch.custom
 
 import io.reactivex.disposables.Disposable
 

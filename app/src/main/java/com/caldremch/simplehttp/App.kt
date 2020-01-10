@@ -1,9 +1,10 @@
 package com.caldremch.simplehttp
 
 import android.app.Application
-import com.caldremch.SimpleRequestUtils
-import com.caldremch.simplehttp.example.SampleConvert
-import com.caldremch.simplehttp.example.SampleObsHandler
+import com.caldremch.SimpleRequest
+import com.caldremch.simplehttp.customhttp.SampleConvert
+import com.caldremch.simplehttp.customhttp.SampleObsHandler
+import com.caldremch.simplehttp.customhttp.SampleServerUrlConfig
 
 /**
  *
@@ -20,7 +21,8 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        SimpleRequestUtils.register(SampleConvert(), SampleObsHandler())
+        ToastUtils.init(this)
+        SimpleRequest.register(SampleConvert(), SampleObsHandler(), SampleServerUrlConfig())
     }
 
 }

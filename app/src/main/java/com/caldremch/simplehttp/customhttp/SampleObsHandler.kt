@@ -1,6 +1,8 @@
-package com.caldremch.simplehttp.example
+package com.caldremch.simplehttp.customhttp
 
-import com.caldremch.observer.IObserverHandler
+import com.caldremch.exception.ApiHttpException
+import com.caldremch.custom.IObserverHandler
+import com.caldremch.simplehttp.ToastUtils
 
 /**
  *
@@ -19,9 +21,12 @@ class SampleObsHandler : IObserverHandler {
     }
 
     override fun closeDialog() {
+
     }
 
     override fun onError(e: Throwable) {
-
+        if (e is ApiHttpException){
+            ToastUtils.show(e.message)
+        }
     }
 }

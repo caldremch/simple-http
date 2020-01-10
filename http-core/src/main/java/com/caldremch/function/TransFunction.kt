@@ -1,6 +1,6 @@
-package com.caldremch
+package com.caldremch.function
 
-import com.caldremch.convert.IConvert
+import com.caldremch.custom.IConvert
 import io.reactivex.functions.Function
 import okhttp3.ResponseBody
 import java.lang.reflect.Type
