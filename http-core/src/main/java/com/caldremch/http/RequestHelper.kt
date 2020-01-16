@@ -46,7 +46,7 @@ class RequestHelper {
         val config = SimpleRequest.getServerUrlConfig()
             ?: throw RuntimeException("please register SimpleRequest")
 
-        val baseUrl = if (config.enableConfig())  config.defaultUrl() else config.currentUrl()
+        val baseUrl = if (config.enableConfig()) config.currentUrl() else config.defaultUrl()
         retrofit = Retrofit.Builder()
             .baseUrl(baseUrl)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())

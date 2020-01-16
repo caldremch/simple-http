@@ -16,7 +16,7 @@ import com.caldremch.custom.IServerUrlConfig
 class SampleServerUrlConfig : IServerUrlConfig {
 
     override fun enableConfig(): Boolean {
-        return false
+        return true
     }
 
     override fun currentUrl(): String {
