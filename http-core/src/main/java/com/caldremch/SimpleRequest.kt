@@ -1,10 +1,12 @@
 package com.caldremch
 
 import com.caldremch.custom.IConvert
-import com.caldremch.custom.IServerUrlConfig
 import com.caldremch.custom.IObserverHandler
+import com.caldremch.custom.IServerUrlConfig
+import com.caldremch.http.ConfigOption
 import com.caldremch.request.GetRequest
 import com.caldremch.request.PostRequest
+import com.google.gson.Gson
 
 /**
  *
@@ -24,6 +26,16 @@ object SimpleRequest {
     private var sObserverHandler: IObserverHandler? = null
 
     private var serverUrlConfig: IServerUrlConfig? = null
+
+    //请求相关配置信息
+    private val configOption = ConfigOption()
+
+    /**
+     * 设置自定义Gson
+     */
+    fun setGson(gson: Gson) {
+        configOption.gson = gson
+    }
 
     fun register(convert: IConvert, handler: IObserverHandler, urlConfig: IServerUrlConfig) {
         sConvert = convert

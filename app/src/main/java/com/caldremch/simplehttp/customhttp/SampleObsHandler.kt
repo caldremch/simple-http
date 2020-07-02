@@ -1,7 +1,7 @@
 package com.caldremch.simplehttp.customhttp
 
-import com.caldremch.exception.ApiHttpException
 import com.caldremch.custom.IObserverHandler
+import com.caldremch.exception.ApiHttpException
 import com.caldremch.simplehttp.ToastUtils
 
 /**
@@ -25,7 +25,9 @@ class SampleObsHandler : IObserverHandler {
     }
 
     override fun onError(e: Throwable) {
-        if (e is ApiHttpException){
+
+        //todo NullDataSuccessException处理这个错误, 换成其他的提示语
+        if (e is ApiHttpException) {
             ToastUtils.show(e.message)
         }
     }

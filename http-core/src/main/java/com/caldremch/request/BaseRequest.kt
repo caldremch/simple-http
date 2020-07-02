@@ -1,7 +1,6 @@
 package com.caldremch.request
 
 import android.content.Context
-import androidx.lifecycle.LifecycleOwner
 import com.caldremch.Api
 import com.caldremch.Method
 import com.caldremch.SimpleRequest
@@ -49,8 +48,11 @@ abstract class BaseRequest(var url: String, @Method var type: Int) : IRequest {
     protected var api: Api
 
     init {
+
+        //需要报错
         val config = SimpleRequest.getServerUrlConfig()
             ?: throw RuntimeException("please register SimpleRequest")
+
         api =
             if (config.enableConfig()) RequestHelper().getApi() else RequestHelper.INSTANCE.getApi()
     }

@@ -75,7 +75,7 @@ task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
 
 group = 'com.caldremch'
 archivesBaseName = 'http-core'
-version = '1.0.0'
+version = '1.0.1'
 uploadArchives {
     repositories {
 //        mavenDeployer {
