@@ -20,10 +20,10 @@ class SampleServerUrlConfig : IServerUrlConfig {
     }
 
     override fun currentUrl(): String {
-        return ""
+        return "https://www.jpark.vip/"
     }
 
     override fun defaultUrl(): String {
-        return ""
+        return "https://www.jpark.vip/"
     }
 }

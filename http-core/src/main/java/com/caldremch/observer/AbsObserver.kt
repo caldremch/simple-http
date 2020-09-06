@@ -1,6 +1,7 @@
 package com.caldremch.observer
 
 import android.content.Context
+import androidx.annotation.RestrictTo
 import androidx.lifecycle.*
 import com.caldremch.callback.AbsCallback
 import com.caldremch.custom.IObserverHandler
@@ -19,6 +20,7 @@ import io.reactivex.rxjava3.core.Observer
  * @describe handle data
  *
  **/
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 class AbsObserver<T>(
     var callback: AbsCallback<T>?,
     var context: Context?,

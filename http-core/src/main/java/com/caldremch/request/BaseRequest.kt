@@ -15,12 +15,13 @@ import com.caldremch.observer.AbsObserver
 import com.caldremch.observer.Option
 import com.caldremch.parse.HttpParams
 import com.caldremch.parse.HttpPath
-import com.google.gson.Gson
+import com.caldremch.parse.HttpUtils
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.*
 import io.reactivex.rxjava3.functions.Function
 import io.reactivex.rxjava3.schedulers.Schedulers
 import okhttp3.ResponseBody
+import java.lang.reflect.Type
 
 /**
  *
@@ -88,11 +89,11 @@ abstract class BaseRequest(var url: String, @Method var type: Int) : IRequest {
 
     protected fun <T> go(obs: Observable<ResponseBody>, callback: AbsCallback<T>) {
 
-        var observable = obs
+        val observable = obs
+
         if (context == null && isShowDialog) {
             isShowToast = false
         }
-
 
         if (callback is DialogCallback) {
             context = callback.context
@@ -101,7 +102,6 @@ abstract class BaseRequest(var url: String, @Method var type: Int) : IRequest {
                 isShowDialog = true
             }
         }
-
 
         val convert = SimpleRequest.getConvert()
         val obsHandler = SimpleRequest.getObserverHandler()
@@ -119,29 +119,36 @@ abstract class BaseRequest(var url: String, @Method var type: Int) : IRequest {
             )
 
 
+        val callbackType = HttpUtils.getType(callback)
+
         if (lifeCycle != null) {
             observable
-                .compose(transform<T>(convert))
+                .compose(transform<T>(convert, callbackType))
                 .to(AutoDispose.autoDisposable<T>(AndroidLifecycleScopeProvider.from(lifeCycle)))
                 .subscribe(observer)
         } else {
             observable
-                .compose(transform<T>(convert))
+                .compose(transform<T>(convert, callbackType))
                 .subscribe(observer)
         }
 
     }
 
-    private fun < R> transform(convert: IConvert): ObservableTransformer<ResponseBody, R> {
+    fun build():GoRequest{
+       return GoRequest()
+    }
+
+    private fun <R> transform(
+        convert: IConvert,
+        callbackType: Type
+    ): ObservableTransformer<ResponseBody, R> {
         return object : ObservableTransformer<ResponseBody, R> {
             override fun apply(upstream: Observable<ResponseBody>): ObservableSource<R> {
                 return upstream.flatMap(object : Function<ResponseBody, ObservableSource<R>> {
                     override fun apply(responseBody: ResponseBody): ObservableSource<R> {
                         return Observable.create(object : ObservableOnSubscribe<R> {
                             override fun subscribe(emitter: ObservableEmitter<R>) {
-//                                val d = convert.convert<R>(responseBody)
-                                val data: R = Any() as R
-                                emitter.onNext(data)
+                                emitter.onNext(convert.convert(responseBody, callbackType))
                             }
                         })
                     }

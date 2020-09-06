@@ -1,5 +1,7 @@
 package com.caldremch.observer
 
+import androidx.annotation.RestrictTo
+
 /**
  *
  * @author Caldremch
@@ -11,6 +13,7 @@ package com.caldremch.observer
  * @describe
  *
  **/
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 data class Option(
     var isShowDialog: Boolean,
     var isShowToast: Boolean,

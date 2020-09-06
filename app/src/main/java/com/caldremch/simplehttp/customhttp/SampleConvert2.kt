@@ -3,10 +3,7 @@ package com.caldremch.simplehttp.customhttp
 import com.caldremch.custom.IConvert
 import com.caldremch.exception.ApiHttpException
 import com.caldremch.exception.NullDataSuccessException
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonNull
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
+import com.google.gson.*
 import okhttp3.ResponseBody
 import java.lang.reflect.Type
 
@@ -38,8 +35,6 @@ class SampleConvert2 : IConvert {
 
                 val status = respType.asString
 
-
-
                 if ("ok" != status) {
 
                     //错误处理
@@ -70,4 +65,10 @@ class SampleConvert2 : IConvert {
             }
         }
     }
+}
+
+class Resp<T>{
+    var message:String? = null
+    var code:Int? = null
+    var errmsg:String? = null
 }
