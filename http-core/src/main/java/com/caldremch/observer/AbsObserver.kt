@@ -1,17 +1,13 @@
 package com.caldremch.observer
 
 import android.content.Context
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.*
 import com.caldremch.callback.AbsCallback
 import com.caldremch.custom.IObserverHandler
-import com.trello.rxlifecycle3.LifecycleProvider
-import io.reactivex.Observer
-import io.reactivex.disposables.Disposable
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.Disposable
 import java.lang.NullPointerException
-
+import io.reactivex.rxjava3.core.Observer
 /**
  *
  * @author Caldremch
@@ -28,7 +24,7 @@ class AbsObserver<T>(
     var context: Context?,
     var option: Option,
     var handler: IObserverHandler?
-) : Observer<T> , LifecycleObserver{
+) : Observer<T> {
 
     private var d: Disposable? = null
 
@@ -46,8 +42,7 @@ class AbsObserver<T>(
     /**
      * when lifecycle is destroy, check subscribe
      */
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    fun destroy(){
+   private fun destroy(){
         d?.let {
             if (!it.isDisposed){
                 it.dispose()
@@ -104,8 +99,12 @@ class AbsObserver<T>(
      */
     private fun registerRawLifecycle() {
         context?.let {
-            if (it !is LifecycleProvider<*> && it is LifecycleOwner) {
-                it.lifecycle.addObserver(this)
+            if (it is LifecycleOwner) {
+                it.lifecycle.addObserver(object : DefaultLifecycleObserver{
+                    override fun onDestroy(owner: LifecycleOwner) {
+                        destroy()
+                    }
+                })
             }
         }
     }
@@ -115,9 +114,12 @@ class AbsObserver<T>(
      */
     private fun unRegisterRawLifecycle() {
         context?.let {
-            if (it !is LifecycleProvider<*> && it is LifecycleOwner) {
-                it.lifecycle.removeObserver(this)
+            if (it is LifecycleOwner) {
+//                it.lifecycle.removeObserver(this)
             }
         }
     }
+
+
+
 }

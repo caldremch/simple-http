@@ -1,7 +1,7 @@
 package com.caldremch.callback
 
 import androidx.annotation.RestrictTo
-import io.reactivex.disposables.Disposable
+import io.reactivex.rxjava3.disposables.Disposable
 
 /**
  *

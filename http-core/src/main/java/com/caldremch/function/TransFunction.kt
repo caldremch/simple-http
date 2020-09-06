@@ -1,7 +1,7 @@
 package com.caldremch.function
 
 import com.caldremch.custom.IConvert
-import io.reactivex.functions.Function
+import io.reactivex.rxjava3.functions.Function
 import okhttp3.ResponseBody
 import java.lang.reflect.Type
 
@@ -21,6 +21,5 @@ class TransFunction<T>(var type: Type, var convert: IConvert) : Function<Respons
     override fun apply(responseBody: ResponseBody): T {
         return convert.convert(responseBody, type)
     }
-
 
 }

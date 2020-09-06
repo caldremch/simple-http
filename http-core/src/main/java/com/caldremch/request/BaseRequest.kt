@@ -1,21 +1,25 @@
 package com.caldremch.request
 
 import android.content.Context
+import androidx.lifecycle.Lifecycle
+import autodispose2.AutoDispose
+import autodispose2.androidx.lifecycle.AndroidLifecycleScopeProvider
 import com.caldremch.Api
 import com.caldremch.Method
 import com.caldremch.SimpleRequest
 import com.caldremch.callback.AbsCallback
 import com.caldremch.callback.DialogCallback
-import com.caldremch.function.TransFunction
+import com.caldremch.custom.IConvert
 import com.caldremch.http.RequestHelper
 import com.caldremch.observer.AbsObserver
 import com.caldremch.observer.Option
 import com.caldremch.parse.HttpParams
 import com.caldremch.parse.HttpPath
-import com.caldremch.parse.HttpUtils
-import com.caldremch.utils.RxUtils
-import com.trello.rxlifecycle3.LifecycleProvider
-import io.reactivex.Observable
+import com.google.gson.Gson
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.*
+import io.reactivex.rxjava3.functions.Function
+import io.reactivex.rxjava3.schedulers.Schedulers
 import okhttp3.ResponseBody
 
 /**
@@ -36,6 +40,7 @@ abstract class BaseRequest(var url: String, @Method var type: Int) : IRequest {
     private var httpPath: HttpPath = HttpPath()
 
     private var context: Context? = null
+    private var lifeCycle: Lifecycle? = null
 
     //是否显示弹窗
     private var isShowDialog = false
@@ -88,11 +93,6 @@ abstract class BaseRequest(var url: String, @Method var type: Int) : IRequest {
             isShowToast = false
         }
 
-        if (context != null) {
-            if (context is LifecycleProvider<*>) {
-                observable = observable.compose(RxUtils.bindToLifecycle(context))
-            }
-        }
 
         if (callback is DialogCallback) {
             context = callback.context
@@ -118,16 +118,44 @@ abstract class BaseRequest(var url: String, @Method var type: Int) : IRequest {
                 obsHandler
             )
 
-        observable.compose(RxUtils.applySchedulers())
-            .map(
-                TransFunction<T>(
-                    HttpUtils.getType(
-                        callback
-                    ), convert
-                )
-            )
-            .subscribe(observer)
+
+        if (lifeCycle != null) {
+            observable
+                .compose(transform<T>(convert))
+                .to(AutoDispose.autoDisposable<T>(AndroidLifecycleScopeProvider.from(lifeCycle)))
+                .subscribe(observer)
+        } else {
+            observable
+                .compose(transform<T>(convert))
+                .subscribe(observer)
+        }
 
     }
 
+    private fun < R> transform(convert: IConvert): ObservableTransformer<ResponseBody, R> {
+        return object : ObservableTransformer<ResponseBody, R> {
+            override fun apply(upstream: Observable<ResponseBody>): ObservableSource<R> {
+                return upstream.flatMap(object : Function<ResponseBody, ObservableSource<R>> {
+                    override fun apply(responseBody: ResponseBody): ObservableSource<R> {
+                        return Observable.create(object : ObservableOnSubscribe<R> {
+                            override fun subscribe(emitter: ObservableEmitter<R>) {
+//                                val d = convert.convert<R>(responseBody)
+                                val data: R = Any() as R
+                                emitter.onNext(data)
+                            }
+                        })
+                    }
+
+                }).subscribeOn(Schedulers.io())
+                    .unsubscribeOn(AndroidSchedulers.mainThread())
+                    .observeOn(AndroidSchedulers.mainThread());
+            }
+        }
+
+    }
+
+
 }
+
+
+

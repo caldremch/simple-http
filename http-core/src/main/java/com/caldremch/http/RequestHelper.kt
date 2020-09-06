@@ -6,7 +6,7 @@ import com.google.gson.Gson
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.RuntimeException
 import java.util.concurrent.TimeUnit
@@ -49,7 +49,7 @@ class RequestHelper {
         val baseUrl = if (config.enableConfig()) config.currentUrl() else config.defaultUrl()
         retrofit = Retrofit.Builder()
             .baseUrl(baseUrl)
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(clientBuilder.build())
             .build()

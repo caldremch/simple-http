@@ -3,7 +3,6 @@ package com.caldremch.http
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.caldremch.SimpleRequest
-import com.caldremch.SimpleRequestUtils
 import com.caldremch.callback.HttpCallback
 import org.junit.Assert.assertEquals
 import org.junit.Before
