@@ -1,6 +1,7 @@
 package com.caldremch.request
 
 import com.caldremch.Method
+import com.caldremch.TempParams
 import com.caldremch.callback.AbsCallback
 import com.caldremch.parse.HttpParams
 import com.google.gson.Gson
@@ -19,10 +20,12 @@ import okhttp3.RequestBody.Companion.toRequestBody
  *
  **/
 class PostRequest(url: String) : BaseRequest(url, Method.POST) {
+
     /**
      * FormUrlEncoded 形式
      */
     protected var formUrlEncoded = false
+
     /**
      * 容我孤陋寡闻 post链接 拼接参数
      */
@@ -61,38 +64,18 @@ class PostRequest(url: String) : BaseRequest(url, Method.POST) {
     }
 
 
-
-
-
     override fun <T> execute(callback: AbsCallback<T>) {
 
+       val params =  TempParams()
+        params.formUrlEncoded = formUrlEncoded
+        params.requestBody = requestBody
+        params.postQuery = postQuery
+        goByParams(params)
+
         //post body
-        if (requestBody != null) {
-            go<T>(api.post(url, requestBody!!), callback)
-            return
-        }
 
-        //post 空 body
-        if (httpParams.isEmpty) {
-            go<T>(api.post(url, getHttpParamsBody()), callback)
-            return
-        }
-
-        //post formUrlEncoded
-        if (formUrlEncoded) {
-            go<T>(api.post(url, httpParams.urlParams), callback)
-            return
-        }
-
-        //post动态链接 url后面拼接 key/value
-        if (postQuery) {
-            go<T>(api.postQuery(url, httpParams.urlParams), callback)
-            return
-        }
-
-        //post json body
-        go<T>(api.post(url, getHttpParamsBody()), callback)
     }
+
 
     private fun getHttpParamsBody(): RequestBody {
         if (httpParams.isEmpty) {

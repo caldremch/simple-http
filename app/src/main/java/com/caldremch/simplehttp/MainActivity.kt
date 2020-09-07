@@ -5,6 +5,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.caldremch.SimpleRequest
 import com.caldremch.callback.HttpCallback
+import com.caldremch.request.GetRequest
 import com.caldremch.simplehttp.customhttp.TestApiConstant
 
 class MainActivity : AppCompatActivity() {
@@ -16,7 +17,9 @@ class MainActivity : AppCompatActivity() {
 
     fun startRequest(view: View) {
 
+
         SimpleRequest.get(TestApiConstant.login)
+
             .put("phone", "15521029734")
             .put("verifyCode", "111")
             .put("phoneModel", "2323")

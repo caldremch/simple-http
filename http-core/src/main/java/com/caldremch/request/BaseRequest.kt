@@ -1,21 +1,16 @@
 package com.caldremch.request
 
-import android.content.Context
 import androidx.lifecycle.Lifecycle
 import autodispose2.AutoDispose
 import autodispose2.androidx.lifecycle.AndroidLifecycleScopeProvider
-import com.caldremch.Api
-import com.caldremch.Method
-import com.caldremch.SimpleRequest
+import com.caldremch.*
 import com.caldremch.callback.AbsCallback
-import com.caldremch.callback.DialogCallback
 import com.caldremch.custom.IConvert
 import com.caldremch.http.RequestHelper
 import com.caldremch.observer.AbsObserver
-import com.caldremch.observer.Option
 import com.caldremch.parse.HttpParams
 import com.caldremch.parse.HttpPath
-import com.caldremch.parse.HttpUtils
+import com.caldremch.parse.HttpUtilsEx
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.*
 import io.reactivex.rxjava3.functions.Function
@@ -37,35 +32,22 @@ import java.lang.reflect.Type
 abstract class BaseRequest(var url: String, @Method var type: Int) : IRequest {
 
     protected var httpParams: HttpParams = HttpParams()
-
-    private var httpPath: HttpPath = HttpPath()
-
-    private var context: Context? = null
-    private var lifeCycle: Lifecycle? = null
-
-    //是否显示弹窗
-    private var isShowDialog = false
-
-    private var dialogTips: String? = ""
-
+    protected var httpPath: HttpPath = HttpPath()
+    protected var lifeCycle: Lifecycle? = null
     //是否显示toast
-    private var isShowToast = true
-
+    protected var isShowToast = true
     protected var api: Api
 
     init {
 
-        //需要报错
-        val config = SimpleRequest.getServerUrlConfig()
+        //must config serverUrlConfig
+        SimpleRequestConfig.serverUrlConfig
             ?: throw RuntimeException("please register SimpleRequest")
-
+        /**
+         * [IServerUrlConfig] enableConfig
+         */
         api =
-            if (config.enableConfig()) RequestHelper().getApi() else RequestHelper.INSTANCE.getApi()
-    }
-
-    fun with(context: Context): BaseRequest {
-        this.context = context
-        return this
+            if (SimpleRequestConfig.serverUrlConfig!!.enableConfig()) RequestHelper().getApi() else RequestHelper.INSTANCE.getApi()
     }
 
     fun put(key: String, value: Any?): BaseRequest {
@@ -74,7 +56,6 @@ abstract class BaseRequest(var url: String, @Method var type: Int) : IRequest {
         }
         return this
     }
-
 
     fun path(pathName: String, value: String): BaseRequest {
         httpPath.put(pathName, value)
@@ -86,59 +67,62 @@ abstract class BaseRequest(var url: String, @Method var type: Int) : IRequest {
         return this
     }
 
+    protected inline fun <reified T> go(obs: Observable<ResponseBody>, callback: AbsCallback<T>) {
 
-    protected fun <T> go(obs: Observable<ResponseBody>, callback: AbsCallback<T>) {
-
-        val observable = obs
-
-        if (context == null && isShowDialog) {
-            isShowToast = false
-        }
-
-        if (callback is DialogCallback) {
-            context = callback.context
-            if (context != null) {
-                dialogTips = callback.tips
-                isShowDialog = true
-            }
-        }
-
-        val convert = SimpleRequest.getConvert()
-        val obsHandler = SimpleRequest.getObserverHandler()
+        val convert = SimpleRequestConfig.sConvert
+        val obsHandler = SimpleRequestConfig.sObserverHandler
 
         if (convert == null || obsHandler == null) {
             throw RuntimeException("please register SimpleRequest")
         }
 
-        val observer =
-            AbsObserver(
-                callback,
-                context,
-                Option(isShowDialog, isShowToast, dialogTips),
-                obsHandler
-            )
+        val observer = AbsObserver(callback, obsHandler)
 
-
-        val callbackType = HttpUtils.getType(callback)
+        val callbackType = HttpUtilsEx.getType<T>(callback)
 
         if (lifeCycle != null) {
-            observable
-                .compose(transform<T>(convert, callbackType))
+            obs.compose(transform<T>(convert, callbackType))
                 .to(AutoDispose.autoDisposable<T>(AndroidLifecycleScopeProvider.from(lifeCycle)))
                 .subscribe(observer)
         } else {
-            observable
-                .compose(transform<T>(convert, callbackType))
-                .subscribe(observer)
+            obs.compose(transform<T>(convert, callbackType)).subscribe(observer)
         }
 
     }
 
-    fun build():GoRequest{
-       return GoRequest()
+
+    protected inline fun goByParams(params: TempParams) {
+        if (params.requestBody != null) {
+            go<T>(api.post(url, requestBody!!), callback)
+            return
+        }
+
+        //post 空 body
+        if (httpParams.isEmpty) {
+            go<T>(api.post(url, getHttpParamsBody()), callback)
+            return
+        }
+
+        //post formUrlEncoded
+        if (formUrlEncoded) {
+            go<T>(api.post(url, httpParams.urlParams), callback)
+            return
+        }
+
+        //post动态链接 url后面拼接 key/value
+        if (postQuery) {
+            go<T>(api.postQuery(url, httpParams.urlParams), callback)
+            return
+        }
+
+        //post json body
+        go<T>(api.post(url, getHttpParamsBody()), callback)
     }
 
-    private fun <R> transform(
+    /**
+     * [ResponseBody] -> [ObservableOnSubscribe]
+     */
+    protected fun <R> transform(
         convert: IConvert,
         callbackType: Type
     ): ObservableTransformer<ResponseBody, R> {

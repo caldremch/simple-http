@@ -1,5 +1,6 @@
 package com.caldremch.simplehttp.customhttp
 
+import android.content.Context
 import com.caldremch.custom.IObserverHandler
 import com.caldremch.exception.ApiHttpException
 import com.caldremch.simplehttp.ToastUtils
@@ -17,7 +18,7 @@ import com.caldremch.simplehttp.ToastUtils
  **/
 class SampleObsHandler : IObserverHandler {
 
-    override fun showDialog() {
+    override fun showDialog(context: Context) {
     }
 
     override fun closeDialog() {

@@ -21,12 +21,6 @@ import com.google.gson.Gson
  **/
 object SimpleRequest {
 
-    private var sConvert: IConvert? = null
-
-    private var sObserverHandler: IObserverHandler? = null
-
-    private var serverUrlConfig: IServerUrlConfig? = null
-
     //请求相关配置信息
     private val configOption = ConfigOption()
 
@@ -38,28 +32,16 @@ object SimpleRequest {
     }
 
     fun register(convert: IConvert, handler: IObserverHandler, urlConfig: IServerUrlConfig) {
-        sConvert = convert
-        sObserverHandler = handler
-        serverUrlConfig = urlConfig
-    }
-
-    fun getConvert(): IConvert? {
-        return sConvert
-    }
-
-    fun getServerUrlConfig(): IServerUrlConfig? {
-        return serverUrlConfig
-    }
-
-    fun getObserverHandler(): IObserverHandler? {
-        return sObserverHandler
+        SimpleRequestConfig.sConvert = convert
+        SimpleRequestConfig.sObserverHandler = handler
+        SimpleRequestConfig.serverUrlConfig = urlConfig
     }
 
     /**
      * post 请求
      */
-    fun post(url: String): PostRequest {
-        return PostRequest(url)
+    inline fun <reified T> post(url: String): PostRequest {
+        return PostRequest<T>(url)
     }
 
     /**

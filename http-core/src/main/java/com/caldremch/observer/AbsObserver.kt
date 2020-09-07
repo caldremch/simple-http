@@ -4,8 +4,9 @@ import android.content.Context
 import androidx.annotation.RestrictTo
 import androidx.lifecycle.*
 import com.caldremch.callback.AbsCallback
+import com.caldremch.callback.DialogCallback
 import com.caldremch.custom.IObserverHandler
-import io.reactivex.rxjava3.core.Observable
+import com.caldremch.exception.NullDataSuccessException
 import io.reactivex.rxjava3.disposables.Disposable
 import java.lang.NullPointerException
 import io.reactivex.rxjava3.core.Observer
@@ -23,21 +24,16 @@ import io.reactivex.rxjava3.core.Observer
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 class AbsObserver<T>(
     var callback: AbsCallback<T>?,
-    var context: Context?,
-    var option: Option,
     var handler: IObserverHandler?
 ) : Observer<T> {
 
     private var d: Disposable? = null
 
     init {
-
-        registerRawLifecycle()
-
         handler?.onInit()
-
-        if (canShowDialog()) {
-            handler?.showDialog()
+        if (isDialogCallback()) {
+            val dialogCallback = callback as DialogCallback<T>
+            handler?.showDialog(dialogCallback.context)
         }
     }
 
@@ -52,7 +48,15 @@ class AbsObserver<T>(
         }
     }
 
-    private fun canShowDialog(): Boolean = option.isShowDialog && context != null
+    /**
+     * 是否是 [DialogCallback]
+     */
+    private fun isDialogCallback(): Boolean{
+        if (callback is DialogCallback<T>){
+            return true
+        }
+        return false
+    }
 
 
     override fun onSubscribe(d: Disposable) {
@@ -68,59 +72,35 @@ class AbsObserver<T>(
 
     override fun onError(e: Throwable) {
 
-        if (canShowDialog()) {
+        //close dialog
+        if (isDialogCallback()) {
             handler?.closeDialog()
         }
 
-        if (e is NullPointerException) {
+        /**
+         * code is 200, but null T ,[AbsCallback.onSuccess] callback
+         */
+        if (e is NullDataSuccessException) {
             callback?.onSuccess(null)
             return
         }
 
+        /**
+         * handle error callback
+         */
         handler?.onError(e)
-
         callback?.onError(e)
-
-        unRegisterRawLifecycle()
     }
 
 
     override fun onComplete() {
 
         handler?.onComplete()
-
-        if (canShowDialog()) {
+        if (isDialogCallback()) {
             handler?.closeDialog()
         }
-
-        unRegisterRawLifecycle()
     }
 
-    /**
-     * register the android lifecycle
-     */
-    private fun registerRawLifecycle() {
-        context?.let {
-            if (it is LifecycleOwner) {
-                it.lifecycle.addObserver(object : DefaultLifecycleObserver{
-                    override fun onDestroy(owner: LifecycleOwner) {
-                        destroy()
-                    }
-                })
-            }
-        }
-    }
-
-    /**
-     * remove  android lifecycle observer
-     */
-    private fun unRegisterRawLifecycle() {
-        context?.let {
-            if (it is LifecycleOwner) {
-//                it.lifecycle.removeObserver(this)
-            }
-        }
-    }
 
 
 

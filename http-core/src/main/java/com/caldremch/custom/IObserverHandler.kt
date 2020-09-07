@@ -1,5 +1,6 @@
 package com.caldremch.custom
 
+import android.content.Context
 import io.reactivex.rxjava3.disposables.Disposable
 
 
@@ -18,15 +19,12 @@ interface IObserverHandler {
     /**
      * 处理弹窗相关逻辑
      */
-    fun showDialog()
-
+    fun showDialog(context: Context)
     fun closeDialog()
-
     fun onInit() {}
     fun onSubscribe(d: Disposable) {}
     fun onNext(data: Any?) {}
     //用户处理错误
     fun onError(e: Throwable)
-
     fun onComplete() {}
 }

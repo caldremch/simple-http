@@ -1,7 +1,9 @@
 package com.caldremch.request
 
 import com.caldremch.Method
+import com.caldremch.ParamsBuilder
 import com.caldremch.callback.AbsCallback
+import com.caldremch.parse.HttpParams
 
 /**
  *
@@ -15,11 +17,12 @@ import com.caldremch.callback.AbsCallback
  *
  **/
 class GetRequest(url: String) : BaseRequest(url,  Method.GET) {
+
     override fun <T> execute(callback: AbsCallback<T>) {
-        if(httpParams.isEmpty) {
-            go<T>(api.get(url), callback)
-        } else {
-            go<T>(api.get(url, httpParams.urlParams), callback)
-        }
+//        if(httpParams.isEmpty) {
+//            go<T>(api.get(url), callback)
+//        } else {
+//            go<T>(api.get(url, httpParams.urlParams), callback)
+//        }
     }
 }
