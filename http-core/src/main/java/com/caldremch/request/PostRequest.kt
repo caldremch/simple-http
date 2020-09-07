@@ -76,7 +76,6 @@ class PostRequest(url: String) : BaseRequest(url, Method.POST) {
 
     }
 
-
     private fun getHttpParamsBody(): RequestBody {
         if (httpParams.isEmpty) {
             return "{}".toRequestBody(HttpParams.MEDIA_TYPE_JSON)

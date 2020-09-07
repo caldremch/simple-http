@@ -28,14 +28,17 @@ import java.lang.reflect.Type
  * @describe
  *
  **/
-abstract class BaseRequest(var url: String, @Method var type: Int) : IRequest {
+abstract class BaseRequestExt<R:IRequest>(var url: String, @Method var type: Int) : IRequestEx<R> {
 
-    protected var httpParams: HttpParams = HttpParams()
+    @PublishedApi
+    internal var httpParams: HttpParams = HttpParams()
     protected var httpPath: HttpPath = HttpPath()
-    protected var lifeCycle: Lifecycle? = null
+    @PublishedApi
+    internal var lifeCycle: Lifecycle? = null
     //是否显示toast
     protected var isShowToast = true
-    protected var api: Api
+    @PublishedApi
+    internal var api: Api
 
     init {
 
@@ -47,26 +50,31 @@ abstract class BaseRequest(var url: String, @Method var type: Int) : IRequest {
          */
         api =
             if (SimpleRequestConfig.serverUrlConfig!!.enableConfig()) RequestHelper().getApi() else RequestHelper.INSTANCE.getApi()
+
     }
 
-    fun put(key: String, value: Any?): BaseRequest {
-        value?.let {
+    override fun put(key: String, value: Any?): R {
+                value?.let {
             httpParams.put(key, value)
         }
         return this
     }
 
-    fun path(pathName: String, value: String): BaseRequest {
+
+    override fun path(pathName: String, value: String): BaseRequestExt<R> {
         httpPath.put(pathName, value)
         return this
     }
 
-    fun disableToast(): BaseRequest {
+    override  fun disableToast(): BaseRequestExt<R> {
         this.isShowToast = false
         return this
     }
 
-    protected inline fun <reified T> go(obs: Observable<ResponseBody>, callback: AbsCallback<T>) {
+
+
+    @PublishedApi
+    internal  inline fun <reified T> go(obs: Observable<ResponseBody>, callback: AbsCallback<T>) {
 
         val convert = SimpleRequestConfig.sConvert
         val obsHandler = SimpleRequestConfig.sObserverHandler
@@ -79,21 +87,22 @@ abstract class BaseRequest(var url: String, @Method var type: Int) : IRequest {
 
 
         if (lifeCycle != null) {
-            obs.compose(transform<T>(convert))
+            obs.compose(transform<T>())
                 .to(AutoDispose.autoDisposable<T>(AndroidLifecycleScopeProvider.from(lifeCycle)))
                 .subscribe(observer)
         } else {
-            obs.compose(transform<T>(convert)).subscribe(observer)
+            obs.compose(transform<T>()).subscribe(observer)
         }
 
     }
 
 
+
     /**
      * [ResponseBody] -> [ObservableOnSubscribe]
      */
-    protected fun <R> transform(
-        convert: IConvert
+    @PublishedApi
+    internal inline fun <reified R> transform(
     ): ObservableTransformer<ResponseBody, R> {
         return object : ObservableTransformer<ResponseBody, R> {
             override fun apply(upstream: Observable<ResponseBody>): ObservableSource<R> {
