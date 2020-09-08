@@ -26,8 +26,7 @@ class SampleConvert : IConvert {
     private val mGson = GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").serializeNulls().create()
     private val mParser = JsonParser()
 
-    override fun <T> convert(responseBody: ResponseBody, type: Type): T {
-
+    override fun <T> convert(responseBody: ResponseBody, clz: Class<T>): T {
         responseBody.use {
             val jsonRespStr: String = responseBody.string()
             val jsonObject = mParser.parse(jsonRespStr).asJsonObject
@@ -50,16 +49,9 @@ class SampleConvert : IConvert {
                     throw NullDataSuccessException()
                 }
             }
-
             if (dataJson == null || dataJson is JsonNull) throw NullDataSuccessException()
-
             val dataStr = dataJson.toString()
-
-            return if (type == String::class.java) {
-                dataStr as T
-            } else {
-                mGson.fromJson(dataStr, type)
-            }
+            return  mGson.fromJson(dataStr, clz)
         }
     }
 

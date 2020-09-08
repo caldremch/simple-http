@@ -4,9 +4,7 @@ import com.caldremch.custom.IConvert
 import com.caldremch.custom.IObserverHandler
 import com.caldremch.custom.IServerUrlConfig
 import com.caldremch.http.ConfigOption
-import com.caldremch.request.GetRequest
 import com.caldremch.request.GetRequestExt
-import com.caldremch.request.PostRequest
 import com.caldremch.request.PostRequestExt
 import com.google.gson.Gson
 
@@ -37,20 +35,6 @@ object SimpleRequest {
         SimpleRequestConfig.sConvert = convert
         SimpleRequestConfig.sObserverHandler = handler
         SimpleRequestConfig.serverUrlConfig = urlConfig
-    }
-
-    /**
-     * post 请求
-     */
-     fun  post(url: String): PostRequest {
-        return PostRequest(url)
-    }
-
-    /**
-     * get 请求
-     */
-    fun get(url: String): GetRequest {
-        return GetRequest(url)
     }
 
     /**

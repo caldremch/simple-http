@@ -18,15 +18,11 @@ import com.caldremch.parse.HttpParams
  **/
 class GetRequestExt(url: String) : BaseRequestExt<GetRequestExt>(url,  Method.GET) {
 
-    override fun <T> execute(callback: AbsCallback<T>) {
-
-    }
-
-    inline fun <reified T> exec(callback: AbsCallback<T>){
+    inline fun <reified T> execute(callback: AbsCallback<T>){
         if(httpParams.isEmpty) {
-            go<T>(api.get(url), callback)
+            go(api.get(url), callback)
         } else {
-            go<T>(api.get(url, httpParams.urlParams), callback)
+            go(api.get(url, httpParams.urlParams), callback)
         }
     }
 }

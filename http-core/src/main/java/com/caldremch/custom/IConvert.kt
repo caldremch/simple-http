@@ -15,6 +15,5 @@ import java.lang.reflect.Type
  *
  **/
 interface IConvert {
-    fun <T> convert(responseBody: ResponseBody, type: Type): T
-    fun <T> convert(responseBody: ResponseBody, type: T): T
+    fun <T> convert(responseBody: ResponseBody, clz:Class<T>): T
 }

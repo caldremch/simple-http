@@ -28,7 +28,7 @@ import java.lang.reflect.Type
  * @describe
  *
  **/
-abstract class BaseRequestExt<R:IRequest>(var url: String, @Method var type: Int) : IRequestEx<R> {
+abstract class BaseRequestExt<R : IRequestEx<R>>(@PublishedApi internal val url: String, @Method internal var type: Int) : IRequestEx<R> {
 
     @PublishedApi
     internal var httpParams: HttpParams = HttpParams()
@@ -50,25 +50,24 @@ abstract class BaseRequestExt<R:IRequest>(var url: String, @Method var type: Int
          */
         api =
             if (SimpleRequestConfig.serverUrlConfig!!.enableConfig()) RequestHelper().getApi() else RequestHelper.INSTANCE.getApi()
-
     }
 
     override fun put(key: String, value: Any?): R {
                 value?.let {
             httpParams.put(key, value)
         }
-        return this
+        return this as R
     }
 
 
-    override fun path(pathName: String, value: String): BaseRequestExt<R> {
+    override fun path(pathName: String, value: String):R {
         httpPath.put(pathName, value)
-        return this
+        return this as R
     }
 
-    override  fun disableToast(): BaseRequestExt<R> {
+    override  fun disableToast(): R {
         this.isShowToast = false
-        return this
+        return this as R
     }
 
 
@@ -110,6 +109,7 @@ abstract class BaseRequestExt<R:IRequest>(var url: String, @Method var type: Int
                     override fun apply(responseBody: ResponseBody): ObservableSource<R> {
                         return Observable.create(object : ObservableOnSubscribe<R> {
                             override fun subscribe(emitter: ObservableEmitter<R>) {
+                                SimpleRequestConfig.sConvert?.convert(responseBody, R::class.java)
                             }
                         })
                     }

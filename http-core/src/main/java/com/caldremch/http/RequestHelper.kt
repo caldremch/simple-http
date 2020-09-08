@@ -2,6 +2,7 @@ package com.caldremch.http
 
 import com.caldremch.Api
 import com.caldremch.SimpleRequest
+import com.caldremch.SimpleRequestConfig
 import com.google.gson.Gson
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -43,7 +44,7 @@ class RequestHelper {
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
         clientBuilder.addInterceptor(loggingInterceptor)
 
-        val config = SimpleRequest.getServerUrlConfig()
+        val config = SimpleRequestConfig.serverUrlConfig
             ?: throw RuntimeException("please register SimpleRequest")
 
         val baseUrl = if (config.enableConfig()) config.currentUrl() else config.defaultUrl()

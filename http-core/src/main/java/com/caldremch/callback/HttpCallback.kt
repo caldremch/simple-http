@@ -12,4 +12,5 @@ package com.caldremch.callback
  *
  **/
 abstract class HttpCallback<T> : AbsCallback<T> {
+
 }

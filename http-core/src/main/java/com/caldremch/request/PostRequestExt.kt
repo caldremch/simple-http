@@ -1,15 +1,11 @@
 package com.caldremch.request
 
-import com.caldremch.Api
 import com.caldremch.Method
-import com.caldremch.TempParams
 import com.caldremch.callback.AbsCallback
 import com.caldremch.parse.HttpParams
 import com.google.gson.Gson
-import io.reactivex.rxjava3.core.Observable
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.ResponseBody
 
 /**
  *
@@ -22,27 +18,31 @@ import okhttp3.ResponseBody
  * @describe
  *
  **/
-class PostRequestExt(url: String) : BaseRequestExt<PostRequestExt>(url, Method.POST) {
+class PostRequestExt(url: String) : BaseRequestExt<PostRequestExt>(url, Method.POST),
+    IPostRequest<PostRequestExt> {
 
     /**
      * FormUrlEncoded 形式
      */
-    protected var formUrlEncoded = false
+    @PublishedApi
+    internal var formUrlEncoded = false
 
     /**
      * 容我孤陋寡闻 post链接 拼接参数
      */
-    protected var postQuery = false
+    @PublishedApi
+    internal var postQuery = false
 
-    protected var requestBody: RequestBody? = null
+    @PublishedApi
+    internal var requestBody: RequestBody? = null
 
 
-    fun put(body: RequestBody): PostRequestExt {
+    override fun put(body: RequestBody): PostRequestExt {
         requestBody = body
         return this
     }
 
-    fun put(body: Any): PostRequestExt {
+    override fun put(body: Any): PostRequestExt {
         if (type == Method.GET && body is Map<*, *>) {
             httpParams.setUrlParamsMap(body as MutableMap<String, Any>)
             return this
@@ -56,55 +56,43 @@ class PostRequestExt(url: String) : BaseRequestExt<PostRequestExt>(url, Method.P
         return this
     }
 
-    fun formUrlEncoded(): PostRequestExt {
+    override fun formUrlEncoded(): PostRequestExt {
         this.formUrlEncoded = true
         return this
     }
 
-    fun postQuery(): PostRequestExt {
+    override fun postQuery(): PostRequestExt {
         this.postQuery = true
         return this
     }
 
+    inline fun <reified T> execute(callback: AbsCallback<T>) {
 
-    override fun <T> execute(callback: AbsCallback<T>) {
-
-        val params = TempParams()
-        params.formUrlEncoded = formUrlEncoded
-        params.requestBody = requestBody
-        params.postQuery = postQuery
-//        goByParams(params)
-
-        //post body
-
-    }
-
-    inline fun <reified T> exe(callback: AbsCallback<T>) {
-        if (`access$requestBody` != null) {
-            go<T>(`access$api`.post(url, `access$requestBody`!!), callback)
+        if (requestBody != null) {
+            go<T>(api.post(url, requestBody!!), callback)
             return
         }
 
         //post 空 body
-        if (`access$httpParams`.isEmpty) {
-            go<T>(`access$api`.post(url, getHttpParamsBody()), callback)
+        if (httpParams.isEmpty) {
+            go<T>(api.post(url, getHttpParamsBody()), callback)
             return
         }
 
         //post formUrlEncoded
-        if (`access$formUrlEncoded`) {
-            go<T>(`access$api`.post(url, `access$httpParams`.urlParams), callback)
+        if (formUrlEncoded) {
+            go<T>(api.post(url, httpParams.urlParams), callback)
             return
         }
 
         //post动态链接 url后面拼接 key/value
-        if (`access$postQuery`) {
-            go<T>(`access$api`.postQuery(url, `access$httpParams`.urlParams), callback)
+        if (postQuery) {
+            go<T>(api.postQuery(url, httpParams.urlParams), callback)
             return
         }
 
         //post json body
-        go<T>(`access$api`.post(url, getHttpParamsBody()), callback)
+        go<T>(api.post(url, getHttpParamsBody()), callback)
     }
 
 
@@ -116,39 +104,5 @@ class PostRequestExt(url: String) : BaseRequestExt<PostRequestExt>(url, Method.P
         return httpParams.toJsonString().toRequestBody(HttpParams.MEDIA_TYPE_JSON)
     }
 
-    @PublishedApi
-    internal var `access$requestBody`: RequestBody?
-        get() = requestBody
-        set(value) {
-            requestBody = value
-        }
 
-    @PublishedApi
-    internal var `access$api`: Api
-        get() = api
-        set(value) {
-            api = value
-        }
-
-
-    @PublishedApi
-    internal var `access$httpParams`: HttpParams
-        get() = httpParams
-        set(value) {
-            httpParams = value
-        }
-
-    @PublishedApi
-    internal var `access$formUrlEncoded`: Boolean
-        get() = formUrlEncoded
-        set(value) {
-            formUrlEncoded = value
-        }
-
-    @PublishedApi
-    internal var `access$postQuery`: Boolean
-        get() = postQuery
-        set(value) {
-            postQuery = value
-        }
 }

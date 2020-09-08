@@ -33,7 +33,6 @@ class ExampleUnitTest {
             .put("verifyCode", "111")
             .put("phoneModel", "2323")
             .put("userSource",1)
-            .
             .execute(object : HttpCallback<Any>(){
                 override fun onSuccess(data: Any?) {
                     System.out.println("testHttp$ onSuccess")

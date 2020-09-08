@@ -13,9 +13,8 @@ import com.caldremch.callback.AbsCallback
  * @describe
  *
  **/
-interface IRequestEx<R> {
-    fun <T> execute(callback: AbsCallback<T>)
+interface IRequestEx<out R : IRequestEx<R>> {
     fun put(key: String, value: Any?): R
-    fun path(pathName: String, value: String):R
+    fun path(pathName: String, value: String): R
     fun disableToast(): R
 }
