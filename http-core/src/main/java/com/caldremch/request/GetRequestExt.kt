@@ -1,9 +1,7 @@
 package com.caldremch.request
 
 import com.caldremch.Method
-import com.caldremch.ParamsBuilder
 import com.caldremch.callback.AbsCallback
-import com.caldremch.parse.HttpParams
 
 /**
  *

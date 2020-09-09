@@ -27,7 +27,7 @@ class ExampleUnitTest {
     fun addition_isCorrect() {
         assertEquals(4, 2 + 2)
 
-        SimpleRequest.getExt(TestApiConstant.login)
+        SimpleRequest.get(TestApiConstant.login)
 
             .put("phone", "15521029734")
             .put("verifyCode", "111")

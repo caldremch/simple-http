@@ -16,12 +16,12 @@ class MainActivity : AppCompatActivity() {
 
     fun startRequest(view: View) {
 
-        SimpleRequest.postExt("").execute(object : HttpCallback<Thread>(){
+        SimpleRequest.post("").execute(object : HttpCallback<Thread>(){
             override fun onSuccess(data: Thread?) {
             }
         })
 
-        SimpleRequest.getExt(TestApiConstant.login)
+        SimpleRequest.get(TestApiConstant.login)
             .put("phone", "15521029734")
             .put("verifyCode", "111")
             .put("phoneModel", "2323")

@@ -40,14 +40,14 @@ object SimpleRequest {
     /**
      * post 请求
      */
-    fun  postExt(url: String): PostRequestExt {
+    fun  post(url: String): PostRequestExt {
         return PostRequestExt(url)
     }
 
     /**
      * get 请求
      */
-    fun getExt(url: String): GetRequestExt {
+    fun get(url: String): GetRequestExt {
         return GetRequestExt(url)
     }
 }
