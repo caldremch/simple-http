@@ -15,25 +15,5 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun startRequest(view: View) {
-
-        SimpleRequest.post("").execute(object : HttpCallback<Thread>(){
-            override fun onSuccess(data: Thread?) {
-            }
-        })
-
-        SimpleRequest.get(TestApiConstant.login)
-            .put("phone", "15521029734")
-            .put("verifyCode", "111")
-            .put("phoneModel", "2323")
-            .put("userSource",1)
-            .execute(object : HttpCallback<Any>(){
-                override fun onSuccess(data: Any?) {
-                    System.out.println("testHttp$ onSuccess")
-                }
-                override fun onError(e: Throwable?) {
-                    System.out.println("testHttp$ onError")
-                }
-            })
-
     }
 }
