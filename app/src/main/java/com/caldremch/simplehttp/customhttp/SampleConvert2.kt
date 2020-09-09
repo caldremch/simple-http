@@ -1,14 +1,10 @@
 package com.caldremch.simplehttp.customhttp
 
-import com.caldremch.custom.IConvert
-import com.caldremch.exception.ApiHttpException
-import com.caldremch.exception.NullDataSuccessException
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonNull
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
+import com.caldremch.android.http.custom.IConvert
+import com.caldremch.android.http.exception.ApiHttpException
+import com.caldremch.android.http.exception.NullDataSuccessException
+import com.google.gson.*
 import okhttp3.ResponseBody
-import java.lang.reflect.Type
 
 /**
  *
@@ -26,7 +22,8 @@ class SampleConvert2 : IConvert {
     private val mGson = GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").serializeNulls().create()
     private val mParser = JsonParser()
 
-    override fun <T> convert(responseBody: ResponseBody, type: Type): T {
+
+    override fun <T> convert(responseBody: ResponseBody, clz: Class<T>): T {
 
         responseBody.use {
             val jsonRespStr: String = responseBody.string()
@@ -37,8 +34,6 @@ class SampleConvert2 : IConvert {
             if (respType != null) {
 
                 val status = respType.asString
-
-
 
                 if ("ok" != status) {
 
@@ -63,11 +58,19 @@ class SampleConvert2 : IConvert {
 
             val dataStr = dataJson.toString()
 
-            return if (type == String::class.java) {
-                dataStr as T
-            } else {
-                mGson.fromJson(dataStr, type)
-            }
+            return Any() as T
+
+//            return if (type == String::class.java) {
+//                dataStr as T
+//            } else {
+//                mGson.fromJson(dataStr, type)
+//            }
         }
     }
+}
+
+class Resp<T>{
+    var message:String? = null
+    var code:Int? = null
+    var errmsg:String? = null
 }

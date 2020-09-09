@@ -1,14 +1,13 @@
 package com.caldremch.simplehttp.customhttp
 
-import com.caldremch.custom.IConvert
-import com.caldremch.exception.ApiCode
-import com.caldremch.exception.ApiHttpException
-import com.caldremch.exception.NullDataSuccessException
+import com.caldremch.android.http.custom.IConvert
+import com.caldremch.android.http.exception.ApiCode
+import com.caldremch.android.http.exception.ApiHttpException
+import com.caldremch.android.http.exception.NullDataSuccessException
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonNull
 import com.google.gson.JsonParser
 import okhttp3.ResponseBody
-import java.lang.reflect.Type
 
 /**
  *
@@ -26,8 +25,7 @@ class SampleConvert : IConvert {
     private val mGson = GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").serializeNulls().create()
     private val mParser = JsonParser()
 
-    override fun <T> convert(responseBody: ResponseBody, type: Type): T {
-
+    override fun <T> convert(responseBody: ResponseBody, clz: Class<T>): T {
         responseBody.use {
             val jsonRespStr: String = responseBody.string()
             val jsonObject = mParser.parse(jsonRespStr).asJsonObject
@@ -50,16 +48,10 @@ class SampleConvert : IConvert {
                     throw NullDataSuccessException()
                 }
             }
-
             if (dataJson == null || dataJson is JsonNull) throw NullDataSuccessException()
-
             val dataStr = dataJson.toString()
-
-            return if (type == String::class.java) {
-                dataStr as T
-            } else {
-                mGson.fromJson(dataStr, type)
-            }
+            return  mGson.fromJson(dataStr, clz)
         }
     }
+
 }
