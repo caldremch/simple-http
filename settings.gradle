@@ -1,3 +1,3 @@
 include ':http-core'
 include ':app'
-rootProject.name = "SimpleHttp"
+rootProject.name = "simple-http"

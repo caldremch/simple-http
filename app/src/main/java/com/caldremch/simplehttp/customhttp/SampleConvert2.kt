@@ -1,11 +1,10 @@
 package com.caldremch.simplehttp.customhttp
 
-import com.caldremch.custom.IConvert
-import com.caldremch.exception.ApiHttpException
-import com.caldremch.exception.NullDataSuccessException
+import com.caldremch.android.http.custom.IConvert
+import com.caldremch.android.http.exception.ApiHttpException
+import com.caldremch.android.http.exception.NullDataSuccessException
 import com.google.gson.*
 import okhttp3.ResponseBody
-import java.lang.reflect.Type
 
 /**
  *

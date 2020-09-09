@@ -1,7 +1,7 @@
 package com.caldremch.simplehttp
 
-import com.caldremch.SimpleRequest
-import com.caldremch.callback.HttpCallback
+import com.caldremch.android.http.SimpleRequest
+import com.caldremch.android.http.callback.HttpCallback
 import com.caldremch.simplehttp.customhttp.SampleConvert
 import com.caldremch.simplehttp.customhttp.SampleObsHandler
 import com.caldremch.simplehttp.customhttp.SampleServerUrlConfig

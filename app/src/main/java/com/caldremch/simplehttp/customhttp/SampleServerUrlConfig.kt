@@ -1,6 +1,6 @@
 package com.caldremch.simplehttp.customhttp
 
-import com.caldremch.custom.IServerUrlConfig
+import com.caldremch.android.http.custom.IServerUrlConfig
 
 /**
  *

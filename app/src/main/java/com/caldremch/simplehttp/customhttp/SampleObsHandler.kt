@@ -1,8 +1,8 @@
 package com.caldremch.simplehttp.customhttp
 
 import android.content.Context
-import com.caldremch.custom.IObserverHandler
-import com.caldremch.exception.ApiHttpException
+import com.caldremch.android.http.custom.IObserverHandler
+import com.caldremch.android.http.exception.ApiHttpException
 import com.caldremch.simplehttp.ToastUtils
 
 /**

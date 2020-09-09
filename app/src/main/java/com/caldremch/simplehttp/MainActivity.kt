@@ -3,8 +3,8 @@ package com.caldremch.simplehttp
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import com.caldremch.SimpleRequest
-import com.caldremch.callback.HttpCallback
+import com.caldremch.android.http.SimpleRequest
+import com.caldremch.android.http.callback.HttpCallback
 import com.caldremch.simplehttp.customhttp.TestApiConstant
 
 class MainActivity : AppCompatActivity() {
