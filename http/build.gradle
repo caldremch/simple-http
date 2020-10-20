@@ -1,6 +1,15 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+
+ext {
+    myLibraryVersion = "1.0.0"
+    myBintrayName = "http"
+    myArtifactId = myBintrayName
+    myLibraryName = "http for android"
+    myLibraryDescription = "http for android"
+}
+
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
@@ -52,3 +61,6 @@ dependencies {
     api "com.squareup.okhttp3:logging-interceptor:$versions_okhttp3"
     api "io.reactivex.rxjava3:rxjava:3.0.6"
 }
+
+apply from: "https://raw.githubusercontent.com/caldremch/gradle-maven-kotlin-dsl/master/bintray-with-maven-publish.gradle"
+
