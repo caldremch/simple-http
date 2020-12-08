@@ -51,13 +51,13 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
     //网络请求依赖
-    api "com.squareup.retrofit2:retrofit:$versions_retrofit"
+    api "com.squareup.retrofit2:retrofit:2.9.0"
     api "com.squareup.retrofit2:converter-gson:$versions_retrofit"
     api "com.squareup.retrofit2:adapter-rxjava3:$versions_retrofit"
     api "androidx.lifecycle:lifecycle-common-java8:2.2.0"
     api 'io.reactivex.rxjava3:rxandroid:3.0.0'
     api 'com.uber.autodispose2:autodispose-androidx-lifecycle:2.0.0'
-    api "com.squareup.okhttp3:okhttp:$versions_okhttp3"
+    api "com.squareup.okhttp3:okhttp:4.8.1"
     api "com.squareup.okhttp3:logging-interceptor:$versions_okhttp3"
     api "io.reactivex.rxjava3:rxjava:3.0.6"
 }
