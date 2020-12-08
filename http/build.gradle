@@ -62,5 +62,5 @@ dependencies {
     api "io.reactivex.rxjava3:rxjava:3.0.6"
 }
 
-apply from: "https://raw.githubusercontent.com/caldremch/gradle-maven-kotlin-dsl/master/bintray-with-maven-publish.gradle"
+apply from: "../upload.gradle"
 
