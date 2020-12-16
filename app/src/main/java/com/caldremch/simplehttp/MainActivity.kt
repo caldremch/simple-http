@@ -15,5 +15,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun startRequest(view: View) {
+        SimpleRequest.post("/test/request/post")
+            .put("param1", "value1")
+            .put("param2", "value2")
+            .put("param3", "value3")
+            .execute(object : HttpCallback<Any>() {
+                override fun onSuccess(data: Any?) {
+
+                }
+            })
+
+
+        SimpleRequest.get("/test/request/get")
+            .put("param1", "value1")
+            .put("param2", "value2")
+            .put("param3", "value3")
+            .execute(object : HttpCallback<Any>() {
+                override fun onSuccess(data: Any?) {
+
+                }
+            })
     }
 }
